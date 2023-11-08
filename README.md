@@ -1,6 +1,8 @@
 # AppDev Projects API
 
-AppDev at Hamilton's internal projects and team members API. Hello
+AppDev at Hamilton's internal projects and team members API.
+
+Hello World
 
 <!-- ## Table of Contents
 
