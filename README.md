@@ -2,7 +2,17 @@
 
 AppDev at Hamilton's internal projects and team members API.
 
-Hello World
+## Usage
+
+To start the development server, run the following command:
+
+```
+flask --app run.py --debug run --port 8000
+```
+
+You can also see the live deployed server using this link. This server is reflected by the main branch of the github.
+
+[projects-api-bl2j.onrender.com](projects-api-bl2j.onrender.com)
 
 <!-- ## Table of Contents
 
@@ -15,9 +25,6 @@ Hello World
 
 Describe how to install and set up the project, including any dependencies that need to be installed.
 
-## Usage
-
-Provide instructions on how to use the project, including any relevant code snippets or examples.
 
 ## Contributing
 
