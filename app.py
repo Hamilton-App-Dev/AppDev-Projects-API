@@ -33,7 +33,7 @@ def projects():
         name = json['name']
         description = json['description']
     else:
-        # if there is an error (no request body providedç, send a 404 response back)
+        # if there is an error (no request body provided, send a 404 response back)
         return "Bad Request: JSON data with 'name' and 'description' is required.", 404
 
     # use sqlalchemy to insert a new row into Projects table of the db
@@ -43,6 +43,27 @@ def projects():
 
     # send a 200 OK response back to the user
     return "Project successfully created!", 200
+
+@app.route('/projects')  # by default, method is get
+def getProjects():
+    projects = db.session.query(Projects).all()
+    result = []
+    # in for loop, turn projects class to append to results array,
+    # then call:
+    # convert into JSON:
+         #y = json.dumps(x)
+
+    for proj in projects:
+        print(f'Id: {proj.id} Name: {proj.name} Description: {proj.description}')
+    return json, 200
+
+@app.route('/projects/{id}', methods=['delete'])  # by default, method is get
+def getProjects():
+
+# define the flask route
+# @app.route('/projects', methods = 3['Post'])
+# 
+
 
 if __name__ == "__main__":
     app.run(host="localhost", port=8000)
