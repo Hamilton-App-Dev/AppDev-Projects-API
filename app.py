@@ -87,8 +87,7 @@ def getUsers():
 
     return jsonify(result), 200
 
-
-@app.route('/projects/<id>', methods=['Delete']) # by default, method is get
+@app.route('/projects/<id>', methods=['Delete'])
 def deleteProject(id):
     try:
         project = db.session.query(Projects).get(id)
@@ -96,11 +95,11 @@ def deleteProject(id):
         db.session.commit()
     except Exception as e:
         print(e)
-    return jsonify({"error": "Error deleting project"}), 500 #500 means server error
+        return jsonify({"error": "Error deleting project"}), 500 #500 means server error
 
     return "Project successfully deleted!", 200
 
-@app.route('/users/<id>', methods=['Delete']) # by default, method is get
+@app.route('/users/<id>', methods=['Delete'])
 def deleteUsers(id):
     try:
         user = db.session.query(Users).get(id)
@@ -111,6 +110,44 @@ def deleteUsers(id):
         return jsonify({"error": "Error deleting user"}), 500
     
     return "User successfully deleted!", 200
+
+def partialUpdate(json, databaseObject):
+    for data in json:
+        if json[data] is not None:
+            setattr(databaseObject,data,json[data])
+
+@app.route('/projects/<id>', methods=['Patch'])
+def updateProject(id):
+    #get the body
+    content_type = request.headers.get('Content-Type')
+    if (content_type == 'application/json'):
+        json = request.get_json()
+    else:
+        # if there is an error (no request body provided, send a 404 response back)
+        return "Updating Eror for projects", 404
+
+    #update the project in the Projects table by the id in the url parameter
+    project = db.session.query(Projects).get(id)
+    partialUpdate(json, project)
+    db.session.commit()
+    return "Project Successfully Updated", 200
+
+@app.route('/users/<id>', methods=['Patch'])
+def updateUsers(id):
+    # get the request body
+    content_type = request.headers.get('Content-Type')
+    if (content_type == 'application/json'):
+        json = request.get_json()
+    else:
+       return "Updating Erorr for users", 404
+    
+    # update the user in the Users table by the id in the url parameter
+    user = db.session.query(Users).get(id)
+    partialUpdate(json, user)
+    db.session.commit()
+
+    # return 200 OK and a helpful message
+    return "User Successfully Updated", 200
 
 
 if __name__ == "__main__":
