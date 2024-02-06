@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 
+
 app = Flask(__name__)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://appdev:4W9w5paZIpXv8Gw8LfhmhHAoh811Q8rL@dpg-cl8a0uavokcc73ate250-a.oregon-postgres.render.com/db_lgx2'
@@ -14,7 +15,7 @@ class Projects(db.Model):
     description = db.Column(db.String(128))
 
 class Users(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(128))
     class_year = db.Column(db.Integer)
     role = db.Column(db.String(128))
@@ -44,25 +45,72 @@ def projects():
     # send a 200 OK response back to the user
     return "Project successfully created!", 200
 
-@app.route('/projects')  # by default, method is get
+
+@app.route('/users', methods = ['Post'])
+def users():
+    # get the request body
+    content_type = request.headers.get('Content-Type')
+    if (content_type == 'application/json'):
+        json = request.get_json()
+        name = json['name']
+        class_year = json['class_year']
+        role = json['role']
+        linkedin_url = json['linkedin_url']
+    else:
+        return "Bad Request: JSON data with 'name', 'class year', 'role', and 'linkedin_url' is required.", 404
+
+    new_user = Users(name = name, class_year = class_year, role = role, linkedin_url = linkedin_url)
+    db.session.add(new_user)
+    db.session.commit()
+
+    return "User successfully created!", 200
+
+
+@app.route('/projects') # by default, method is get
 def getProjects():
-    projects = db.session.query(Projects).all()
+    projects = db.session.query(Projects).order_by(Projects.id).all()
     result = []
-    # in for loop, turn projects class to append to results array,
-    # then call:
-    # convert into JSON:
-         #y = json.dumps(x)
-
     for proj in projects:
-        print(f'Id: {proj.id} Name: {proj.name} Description: {proj.description}')
-    return json, 200
+        print(f"id:{proj.id}")
+        proj_dict = {'id': proj.id, 'name': proj.name,'description': proj.description}
+        result.append(proj_dict)
 
-@app.route('/projects/{id}', methods=['delete'])  # by default, method is get
-def getProjects():
+    return jsonify(result), 200
 
-# define the flask route
-# @app.route('/projects', methods = 3['Post'])
-# 
+@app.route('/users') # by default, method is get
+def getUsers():
+    users = db.session.query(Users).all()
+    result = []
+    for use in users:
+        use_dict = {'id': use.id, 'name': use.name,'class_year': use.class_year, 'role': use.role, 'linkedin_url': use.linkedin_url}
+        result.append(use_dict)
+
+    return jsonify(result), 200
+
+
+@app.route('/projects/<id>', methods=['Delete']) # by default, method is get
+def deleteProject(id):
+    try:
+        project = db.session.query(Projects).get(id)
+        db.session.delete(project)
+        db.session.commit()
+    except Exception as e:
+        print(e)
+    return jsonify({"error": "Error deleting project"}), 500 #500 means server error
+
+    return "Project successfully deleted!", 200
+
+@app.route('/users/<id>', methods=['Delete']) # by default, method is get
+def deleteUsers(id):
+    try:
+        user = db.session.query(Users).get(id)
+        db.session.delete(user)
+        db.session.commit()
+    except Exception as e:
+        print(e)
+        return jsonify({"error": "Error deleting user"}), 500
+    
+    return "User successfully deleted!", 200
 
 
 if __name__ == "__main__":
