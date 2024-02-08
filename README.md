@@ -12,8 +12,7 @@ flask --app run.py --debug run --port 8000
 
 You can also see the live deployed server using this link. This server is reflected by the main branch of the github.
 
-[projects-api-bl2j.onrender.com](projects-api-bl2j.onrender.com)
-
+[projects-api-bl2j.onrender.com](https://projects-api-gplx.onrender.com)
 <!-- ## Table of Contents
 
 - [Installation](#installation)
